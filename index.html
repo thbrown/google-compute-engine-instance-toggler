@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html class="" style="">
+<head>
+<title>Minecraft</title>
+</head>
+<body>
+	<div id=parent>
+		<h1>Minecraft Server Status:</h1>
+		<div id="isEnabled">
+			Something went wrong. Status failed to load.
+		</div>
+		<div id="button" style="padding: 5px">
+			<button id="enable" onmousedown="enableServer()">
+				Enable
+			</button>
+			<button id="disable" onmousedown="disableServer()">
+				Disable
+			</button>
+		</div>
+	<div/>
+</body>
+<script>
+	const PAGE_TIMEOUT_MS = 2*60*1000;
+	const POLL_INTERVAL_MS = 2*1000;
+
+	var buttonPressed = "";
+
+	pollForStatus();
+	var interval = setInterval(pollForStatus, POLL_INTERVAL_MS);
+	var timeout = setTimeout(killPage, PAGE_TIMEOUT_MS);
+
+	function pollForStatus() {getServerStatus(updateUI)};
+	
+	function getServerStatus(callback) {
+		console.log("Checking status...");
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("GET", "http://localhost:8001/status", true);
+		xmlhttp.onreadystatechange = function() {
+			if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				status = xmlhttp.responseText;
+				callback(status);
+			}
+		};
+		xmlhttp.send();
+	}
+
+	function enableServer() {
+		resetPageTimeout();
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "http://localhost:8001/on", true);
+		xmlhttp.send();
+		document.getElementById("enable").disabled = "true";
+		document.getElementById("disable").disabled = "true";
+
+		// TODO: Put this in callback, refresh UI on error
+		buttonPressed = "enable";
+	}
+
+	function disableServer() {
+		resetPageTimeout();
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "http://localhost:8001/off", true);
+		xmlhttp.send();
+		document.getElementById("enable").disabled = "true";
+		document.getElementById("disable").disabled = "true";
+
+		// TODO: Put this in callback, refresh UI on error
+		buttonPressed = "disable";
+	}
+
+	function updateUI(status) {
+		console.log("Recieved status:" + status);
+
+		// Color and label div
+		document.getElementById("isEnabled").innerHTML = "Server has status " + status;
+		if(status == "TERMINATED") {
+			document.getElementById("isEnabled").style = "background-color:red;color:white";
+		} else if (status == "RUNNING") {
+			document.getElementById("isEnabled").style = "background-color:green;color:white"
+		} else if (status == "STAGING") {
+			document.getElementById("isEnabled").style = "background-color:LightGreen;color:black"
+		} else if (status == "STOPPING") {
+			document.getElementById("isEnabled").style = "background-color:LightCoral;color:black"
+		} else {
+			document.getElementById("isEnabled").style = "background-color:yellow;color:black"
+		}
+
+		// Enable/disable buttons
+		if(buttonPressed == "enable") {
+			if (status == "RUNNING") {
+				document.getElementById("enable").disabled = true;
+				document.getElementById("disable").disabled = false;
+				buttonPressed = "";
+			} else {
+				document.getElementById("enable").disabled = true;
+				document.getElementById("disable").disabled = true;
+			}
+		} else if(buttonPressed == "disable") {
+			if (status == "TERMINATED") {
+				document.getElementById("enable").disabled = false;
+				document.getElementById("disable").disabled = true;
+				buttonPressed = "";
+			} else {
+				document.getElementById("enable").disabled = true;
+				document.getElementById("disable").disabled = true;
+			}
+		} else {
+			if (status == "TERMINATED") {
+				document.getElementById("enable").disabled = false;
+				document.getElementById("disable").disabled = true;
+			} else if (status == "RUNNING") {
+				document.getElementById("enable").disabled = true;
+				document.getElementById("disable").disabled = false;
+			} else {
+				document.getElementById("enable").disabled = true;
+				document.getElementById("disable").disabled = true;
+			}
+		}
+	}
+
+	function resetPageTimeout() {
+		clearTimeout(timeout);
+		timeout = setTimeout(killPage,PAGE_TIMEOUT_MS);
+		console.log("Refreshed");
+	}
+
+	function killPage() {
+		clearTimeout(interval);
+		document.getElementById("parent").innerHTML = "<h1>Page timed out. Please refresh.<h1>";
+	}
+
+</script>
+</html>
