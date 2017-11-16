@@ -1,7 +1,7 @@
 {
-  "name": "google-cloud-compute-instance-toggler",
+  "name": "google-compute-engine-instance-toggler",
   "version": "1.0.0",
-  "description": "A Node js webserver that allows anybody online to start or stop a Google Cloud Compute instance via browser",
+  "description": "A Node js webserver that allows anybody online to start or stop a Google Compute Engine instance via browser",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

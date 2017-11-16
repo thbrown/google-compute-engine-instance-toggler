@@ -3,3 +3,9 @@ node_modules/
 
 # Logs
 npm-debug.log
+
+# Credentials
+cred.json
+
+# Configuration
+config.json
