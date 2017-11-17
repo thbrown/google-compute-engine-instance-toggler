@@ -12,7 +12,7 @@ const ZONE = config.zone;
 const INSTANCE = config.instance;
 
 // Define server behavior
-const PORT = 8001;
+const PORT = 80;
 const POLL_INTERVAL_MS = 2*1000;
 const HOW_LONG_TO_POLL_FOR_MS = 2*60*1000;
 

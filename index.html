@@ -22,6 +22,7 @@
 <script>
 	const PAGE_TIMEOUT_MS = 2*60*1000;
 	const POLL_INTERVAL_MS = 2*1000;
+	const ORIGIN = window.location.origin;
 
 	var buttonPressed = "";
 
@@ -34,7 +35,7 @@
 	function getServerStatus(callback) {
 		console.log("Checking status...");
 		xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("GET", "http://localhost:8001/status", true);
+		xmlhttp.open("GET", ORIGIN + "/status", true);
 		xmlhttp.onreadystatechange = function() {
 			if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				status = xmlhttp.responseText;
@@ -47,7 +48,7 @@
 	function enableServer() {
 		resetPageTimeout();
 		xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("POST", "http://localhost:8001/on", true);
+		xmlhttp.open("POST", ORIGIN + "/on", true);
 		xmlhttp.send();
 		document.getElementById("enable").disabled = "true";
 		document.getElementById("disable").disabled = "true";
@@ -59,7 +60,7 @@
 	function disableServer() {
 		resetPageTimeout();
 		xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("POST", "http://localhost:8001/off", true);
+		xmlhttp.open("POST", ORIGIN + "/off", true);
 		xmlhttp.send();
 		document.getElementById("enable").disabled = "true";
 		document.getElementById("disable").disabled = "true";
